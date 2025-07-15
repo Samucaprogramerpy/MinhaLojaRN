@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import { obterTodosProdutos } from '../services/servicosProdutos';
 import { ProdutoAPI } from '../types/api'; // Reutilize a interface
@@ -8,6 +9,7 @@ interface TelaProdutosProps {
 }
 
 export default function TelaProdutos({ aoLogout }: TelaProdutosProps) {
+  const navegacao = useNavigation(); 
   const [listaProdutos, setListaProdutos] = useState<ProdutoAPI[]>([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState<ProdutoAPI[]>([]);
   const [carregandoProdutos, setCarregandoProdutos] = useState(true);
@@ -57,14 +59,17 @@ export default function TelaProdutos({ aoLogout }: TelaProdutosProps) {
   }, [termoBusca, listaProdutos]); // Dependências: termoBusca e listaProdutos
 
   const renderizarItemProduto = ({ item }: { item: ProdutoAPI }) => (
-    <View style={estilos.itemProduto}>
+    <TouchableOpacity
+      style={estilos.itemProduto}
+      onPress={() => navegacao.navigate("DetalhesProduto", { produtoId: item.id })}
+    >
       <Image source={{ uri: item.image }} style={estilos.imagemProduto} />
       <View style={estilos.detalhesProduto}>
         <Text style={estilos.tituloProduto}>{item.title}</Text>
         <Text style={estilos.categoriaProduto}>{item.category}</Text>
         <Text style={estilos.precoProduto}>R$ {item.price.toFixed(2)}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (carregandoProdutos) {

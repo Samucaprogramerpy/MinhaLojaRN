@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import TelaLogin from './src/screens/TelaLogin';
-import TelaProdutos from './src/screens/TelaProdutos'; // Crie esta tela no Passo 6
-import { obterToken, removerToken } from './src/services/servicoArmazenamento';
-import api from './src/api/axiosConfig'; // Importe a instância configurada do Axios
+import { useState, useEffect } from "react";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import TelaLogin from "./src/screens/TelaLogin";
+import TelaProdutos from "./src/screens/TelaProdutos";
+import TelaDetalhesProduto from "./src/screens/TelaDetalhesProduto"; // Importe a nova tela
+import { obterToken, removerToken } from "./src/services/servicoArmazenamento";
+import api from "./src/api/axiosConfig";
+
+const Pilha = createNativeStackNavigator(); // Crie uma instância do Stack Navigator
 
 export default function App() {
-  const [autenticado, setAutenticado] = useState<boolean | null>(null); // null = verificando
+  const [autenticado, setAutenticado] = useState<boolean | null>(null);
   const [carregandoInicial, setCarregandoInicial] = useState(true);
 
   useEffect(() => {
     const verificarAutenticacao = async () => {
       const token = await obterToken();
       if (token) {
-        // Configura o cabeçalho de autorização padrão do Axios
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         setAutenticado(true);
       } else {
         setAutenticado(false);
@@ -22,14 +27,11 @@ export default function App() {
       setCarregandoInicial(false);
     };
     verificarAutenticacao();
-    // O interceptor de resposta já foi configurado em axiosConfig.ts
-    // Ele lidará com erros 401 e removerá o token.
-    // Você pode querer adicionar um listener aqui ou um contexto para reagir ao logout forçado.
   }, []);
 
   const lidarComLogout = async () => {
     await removerToken();
-    delete api.defaults.headers.common['Authorization']; // Remove o token do Axios
+    delete api.defaults.headers.common["Authorization"];
     setAutenticado(false);
   };
 
@@ -41,17 +43,36 @@ export default function App() {
     );
   }
 
-  if (autenticado) {
-    return <TelaProdutos aoLogout={lidarComLogout} />;
-  } else {
-    return <TelaLogin aoLoginSucesso={() => setAutenticado(true)} />;
-  }
+  return (
+    <NavigationContainer>
+      <Pilha.Navigator screenOptions={{ headerShown: false }}>
+        {autenticado ? (
+          // Telas acessíveis após o login
+          <Pilha.Group>
+            <Pilha.Screen name="Produtos" options={{ title: "Lista de Produtos" }}>
+              {(props) => <TelaProdutos {...props} aoLogout={lidarComLogout} />}
+            </Pilha.Screen>
+            <Pilha.Screen name="DetalhesProduto" options={{ title: "Detalhes do Produto" }}>
+              {(props) => <TelaDetalhesProduto {...props} />}
+            </Pilha.Screen>
+          </Pilha.Group>
+        ) : (
+          // Telas acessíveis antes do login
+          <Pilha.Group>
+            <Pilha.Screen name="Login" options={{ title: "Entrar" }}>
+              {(props) => <TelaLogin {...props} aoLoginSucesso={() => setAutenticado(true)} />}
+            </Pilha.Screen>
+          </Pilha.Group>
+        )}
+      </Pilha.Navigator>
+    </NavigationContainer>
+  );
 }
 
 const estilos = StyleSheet.create({
   containerCentral: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
