@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TelaLogin from "./src/screens/TelaLogin";
 import TelaProdutos from "./src/screens/TelaProdutos";
 import TelaDetalhesProduto from "./src/screens/TelaDetalhesProduto"; // Importe a nova tela
+import Input from "./src/screens/TelaBuscaProdutos";
 import { obterToken, removerToken } from "./src/services/servicoArmazenamento";
 import api from "./src/api/axiosConfig";
 
@@ -54,6 +55,9 @@ export default function App() {
             </Pilha.Screen>
             <Pilha.Screen name="DetalhesProduto" options={{ title: "Detalhes do Produto" }}>
               {(props) => <TelaDetalhesProduto {...props} />}
+            </Pilha.Screen>
+            <Pilha.Screen  name="Busca" options={{title: "Buscar"}}>
+              {(props) => <Input {...props} />}
             </Pilha.Screen>
           </Pilha.Group>
         ) : (
