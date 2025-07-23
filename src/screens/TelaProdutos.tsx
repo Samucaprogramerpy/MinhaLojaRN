@@ -38,27 +38,7 @@ export default function TelaProdutos({ aoLogout }: TelaProdutosProps) {
     carregarProdutos();
   }, [aoLogout]); // aoLogout como dependência para garantir que a função esteja atualizada
 
-  // Adicionar useEffect para filtrar produtos quando 'termoBusca' mudar
-  useEffect(() => {
-    const filtrarProdutos = listaProdutos.filter(produto =>
-      produto.title.toLowerCase().includes(termoBusca.toLowerCase()) ||
-      produto.category.toLowerCase().includes(termoBusca.toLowerCase())
-    );
-    setProdutosFiltrados(filtrarProdutos);
-  }, [termoBusca, listaProdutos]);
-
-  useEffect(() => {
-    if (termoBusca === '') {
-      setProdutosFiltrados(listaProdutos);
-    } else {
-      const produtosEncontrados = listaProdutos.filter(produto =>
-        produto.title.toLowerCase().includes(termoBusca.toLowerCase()) ||
-        produto.category.toLowerCase().includes(termoBusca.toLowerCase())
-      );
-      setProdutosFiltrados(produtosEncontrados);
-    }
-  }, [termoBusca, listaProdutos]); // Dependências: termoBusca e listaProdutos
-
+ 
   const renderizarItemProduto = ({ item }: { item: ProdutoAPI }) => (
     <TouchableOpacity
       style={estilos.itemProduto}
@@ -98,19 +78,12 @@ export default function TelaProdutos({ aoLogout }: TelaProdutosProps) {
       <View style={estilos.cabecalho}>
         <Text style={estilos.tituloPagina}>Produtos</Text>
         <TouchableOpacity onPress={() => navegacao.navigate("Busca")}>
-          <Text style={estilos.lupa}>🔎</Text>
+          <Text style={estilos.lupa}>🔍︎ Filtrar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={estilos.botaoLogout} onPress={aoLogout}>
           <Text style={estilos.textoBotao}>Sair</Text>
         </TouchableOpacity>
       </View>
-
-      <TextInput
-        style={estilos.inputBusca}
-        placeholder="Pesquisar produtos..."
-        value={termoBusca}
-        onChangeText={setTermoBusca}
-      />
 
       <FlatList
         data={produtosFiltrados}
