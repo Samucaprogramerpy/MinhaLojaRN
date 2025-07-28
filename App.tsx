@@ -9,6 +9,8 @@ import TelaDetalhesProduto from "./src/screens/TelaDetalhesProduto"; // Importe 
 import Input from "./src/screens/TelaBuscaProdutos";
 import { obterToken, removerToken } from "./src/services/servicoArmazenamento";
 import api from "./src/api/axiosConfig";
+import Toast from "react-native-toast-message";
+import TelaAdmin from "./src/screens/TelaAdminProdutos";
 
 const Pilha = createNativeStackNavigator(); // Crie uma instância do Stack Navigator
 
@@ -59,6 +61,9 @@ export default function App() {
             <Pilha.Screen  name="Busca" options={{title: "Buscar"}}>
               {(props) => <Input {...props} />}
             </Pilha.Screen>
+            <Pilha.Screen name="TelaAdmin" options={{title: "admin"}}>
+              {(props)=> <TelaAdmin {...props} />}
+            </Pilha.Screen>
           </Pilha.Group>
         ) : (
           // Telas acessíveis antes do login
@@ -69,6 +74,7 @@ export default function App() {
           </Pilha.Group>
         )}
       </Pilha.Navigator>
+      <Toast/>
     </NavigationContainer>
   );
 }
