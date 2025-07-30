@@ -3,7 +3,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
 import { obterTodosProdutos } from '../services/servicosProdutos';
 import { ProdutoAPI } from '../types/api';
-import { View, StyleSheet, Text, TextInput, FlatList, Image } from "react-native";
+import { View, StyleSheet, Text, FlatList, Image, Modal } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 
@@ -20,6 +21,7 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
     const [carregandoProdutos, setCarregandoProdutos] = useState(true);
     const [mensagemErro, setMensagemErro] = useState('');
     const [listaProdutos, setListaProdutos] = useState<ProdutoAPI[]>([]);
+    const [Visible, setVisible ] = useState(false);
 
 
     useEffect(() => {
@@ -98,6 +100,16 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
 
       return(
             <View style={styles.container}>
+                <Modal animationType="slide" visible={Visible} onRequestClose={() => {setVisible(!Visible)}}>
+                  <View>
+                    <Text>
+                      ola mundo
+                    </Text>
+                  </View>
+                </Modal>
+                <TouchableOpacity onPress={() => setVisible(true) }>
+                  <Text>Adicionar Produto</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.botao} onPress={() => naveg.goBack()}>
                     <Text>{"< Voltar"}</Text>
                 </TouchableOpacity>
@@ -155,6 +167,6 @@ const styles = StyleSheet.create({
     mensagemErro: { textAlign: 'center', marginBottom: 20 },
     botaoExcluir : {backgroundColor: 'red', padding: 5, alignItems: 'center', borderRadius: 10, width: 30, },
     excluir : {flex : 1, alignItems: 'flex-end'},
-    pai : {flexDirection: 'row',  flex : 1}
+    pai : {flexDirection: 'row',  flex : 1},
 })
 export default TelaAdmin

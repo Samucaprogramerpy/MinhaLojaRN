@@ -106,9 +106,9 @@ const estilos = StyleSheet.create({
   containerCentral: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   cabecalho: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   tituloPagina: { fontSize: 26 },
-  botaoLogout: { paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5, flexDirection: 'row'},
+  botaoLogout: { paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5, flexDirection: 'row', alignItems: 'center'},
   lupa : { fontSize: 20, },
-  textoBotao: { fontSize: 14, marginRight: 15 },
+  textoBotao: { fontSize: 14, marginRight: 50, width: 30 },
   inputBusca: { width: '100%', padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 15 },
   itemProduto: { flexDirection: 'row', padding: 15, borderWidth: 1, borderColor: '#eee', borderRadius: 8, marginBottom: 10, alignItems: 'center' },
   imagemProduto: { width: 60, height: 60, borderRadius: 5, marginRight: 15 },
@@ -118,6 +118,6 @@ const estilos = StyleSheet.create({
   precoProduto: { fontSize: 15, fontWeight: 'bold' },
   listaConteudo: { paddingBottom: 20 },
   mensagemErro: { textAlign: 'center', marginBottom: 20 },
-  adm : { fontSize: 12 }
+  adm : { fontSize: 18, width: 60, textAlign: 'center', marginTop: 3.5 },
 });
 
