@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Component } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
+import { Button, TouchableOpacity } from "react-native";
 import { obterTodosProdutos } from '../services/servicosProdutos';
 import { ProdutoAPI } from '../types/api';
-import { View, StyleSheet, Text, FlatList, Image, Modal } from "react-native";
+import { View, StyleSheet, Text, FlatList, Image, Modal, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Input from "./TelaBuscaProdutos";
+import Toast from "react-native-toast-message";
 
 
 
@@ -22,6 +24,8 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
     const [mensagemErro, setMensagemErro] = useState('');
     const [listaProdutos, setListaProdutos] = useState<ProdutoAPI[]>([]);
     const [Visible, setVisible ] = useState(false);
+    const [NomeProduto, setNomeProduto] = useState('');
+    const [preco, setPreco] = useState('');
 
 
     useEffect(() => {
@@ -78,6 +82,43 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
           console.error('Erro ao excluir produto:', error);
         }
       };
+      function addProduto () {
+        const regex = /[^,0-9]/;
+        if (regex.test(preco)) {
+          Toast.show({
+            type : "error",
+            text1 : "O preço não conrresponde"
+          })
+          setVisible(false)
+        } else {
+          function request = async () => {
+            try {
+              const resposta = await fetch ('https://fakestoreapi.com/users'. {
+              method : 'POST',
+              headers: {
+                'Content-Type' : 'application/json',
+              },
+              body: JSON.stringify({
+                chave1 : NomeProduto,
+                chave2 : preco,
+              }),
+            });
+            if (resposta.status === 200) {
+              const dados = await resposta.json();
+              console.log('Sucesso' dados);
+            } else if (resposta.status === 400) {
+                const erro = await resposta.json();
+                console.log('Error' erro)
+            } else {
+              console.warn(`Erro Inesperado: ${resposta.status}`)
+            }
+          } catch (erro) {
+            console.error
+          }
+          }
+        }
+          
+      }
 
     const renderizarItemProduto = ({ item }: { item: ProdutoAPI }) => (
             <TouchableOpacity
@@ -100,19 +141,26 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
 
       return(
             <View style={styles.container}>
-                <Modal animationType="slide" visible={Visible} onRequestClose={() => {setVisible(!Visible)}}>
-                  <View>
-                    <Text>
-                      ola mundo
-                    </Text>
+                <Modal animationType="slide" visible={Visible} transparent={true} presentationStyle="overFullScreen" onRequestClose={() => {setVisible(!Visible)}}>
+                  <View style = {styles.component}>
+                    <View style={styles.quest}>
+                      <Text style = {styles.TextModal}>Adicione um Produto</Text>
+                      <View style = {styles.ViewInput}>
+                        <TextInput value={NomeProduto} onChangeText={setNomeProduto} style = {styles.input} placeholder="Digite o nome do produto"></TextInput>
+                        <TextInput value={preco} onChangeText={setPreco} keyboardType="numeric" style = {styles.input} placeholder="Adicione o preço do produto. Ex : R$ 15,99"></TextInput>
+                      </View>
+                      <TouchableOpacity onPress={addProduto}>Adicionar Produto</TouchableOpacity>
+                    </View>
                   </View>
                 </Modal>
-                <TouchableOpacity onPress={() => setVisible(true) }>
-                  <Text>Adicionar Produto</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.botao} onPress={() => naveg.goBack()}>
-                    <Text>{"< Voltar"}</Text>
-                </TouchableOpacity>
+                <View style = {styles.configs}>
+                  <TouchableOpacity style={styles.botao} onPress={() => naveg.goBack()}>
+                      <Text>{"< Voltar"}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setVisible(!Visible)}>
+                    <Text style = {styles.addProduto} >Adicionar Produto</Text>
+                  </TouchableOpacity>
+                </View>
                 <FlatList
                     data={produtosFiltrados}
                     keyExtractor={(item) => item.id.toString()}
@@ -168,5 +216,12 @@ const styles = StyleSheet.create({
     botaoExcluir : {backgroundColor: 'red', padding: 5, alignItems: 'center', borderRadius: 10, width: 30, },
     excluir : {flex : 1, alignItems: 'flex-end'},
     pai : {flexDirection: 'row',  flex : 1},
+    component : {flex : 1, alignItems : "center", justifyContent : "center", backgroundColor : 'rgba(0, 0, 0, 0.5)' },
+    quest : {display : "flex", flexDirection : "column", backgroundColor : "white", padding : 10, borderRadius : 10, width : 800, height : 600, alignItems : "center", justifyContent : "space-between"},
+    configs : {display : "flex", flexDirection : "row", justifyContent : "space-between"}, 
+    addProduto : {marginRight : 30},
+    input : { width : 770, padding : 10, borderRadius : 10, marginTop : 50, borderWidth : 1, borderColor : "black", color : "gray "},
+    ViewInput : {display : "flex"},
+    TextModal : {fontFamily : "Arial", fontSize : 16, fontWeight : "bold", marginTop : 15}
 })
 export default TelaAdmin
