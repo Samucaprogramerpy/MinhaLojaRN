@@ -7,6 +7,7 @@ import { View, StyleSheet, Text, FlatList, Image, Modal, TextInput } from "react
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "./TelaBuscaProdutos";
 import Toast from "react-native-toast-message";
+import Svg, {Path} from "react-native-svg";
 
 
 
@@ -82,42 +83,46 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
           console.error('Erro ao excluir produto:', error);
         }
       };
-      function addProduto () {
-        const regex = /[^,0-9]/;
-        if (regex.test(preco)) {
-          Toast.show({
-            type : "error",
-            text1 : "O preço não conrresponde"
-          })
+
+      const addProduto = async () => {
+        const contemLetras = /[a-zA-Z]/.test(preco)
+        if (preco.trim() === '' || NomeProduto.trim() === '') {
           setVisible(false)
+          Toast.show({
+            type: "error",
+            text1: "Complete os campos corretamente"
+          })
+        }
+        else if (contemLetras) {
+          setVisible(false)
+          Toast.show({
+            type: 'error',
+            text1: 'Preço invalido!'
+          })
         } else {
-          function request = async () => {
-            try {
-              const resposta = await fetch ('https://fakestoreapi.com/users'. {
+          setVisible(false)
+          Toast.show({
+            type:"info",
+            text1 : 'Produto Adicionado!'
+          })
+          try {
+            const resposta = await fetch ('https://fakestoreapi.com/products', {
               method : 'POST',
-              headers: {
-                'Content-Type' : 'application/json',
+              headers : {'content-type' : 'application/json',
+  
               },
               body: JSON.stringify({
-                chave1 : NomeProduto,
-                chave2 : preco,
+                valor1 : NomeProduto,
+                valor2 : preco
               }),
-            });
-            if (resposta.status === 200) {
-              const dados = await resposta.json();
-              console.log('Sucesso' dados);
-            } else if (resposta.status === 400) {
-                const erro = await resposta.json();
-                console.log('Error' erro)
-            } else {
-              console.warn(`Erro Inesperado: ${resposta.status}`)
-            }
+            })
+            await resposta.json();
+            console.log(resposta);
           } catch (erro) {
-            console.error
-          }
+            console.error('Erro ao enviar', erro);
           }
         }
-          
+        
       }
 
     const renderizarItemProduto = ({ item }: { item: ProdutoAPI }) => (
@@ -133,7 +138,7 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
                     <Text style={styles.precoProduto}>R$ {item.price.toFixed(2)}</Text>
                 </View>
                 <View style={styles.excluir}>
-                    <TouchableOpacity onPress={() => excluirProduto(item.id)} style={styles.botaoExcluir}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></TouchableOpacity>
+                    <TouchableOpacity onPress={() => excluirProduto(item.id)} style={styles.botaoExcluir}><Svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><Path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></Svg></TouchableOpacity>
                 </View>
             </View>
             </TouchableOpacity>
@@ -149,7 +154,7 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
                         <TextInput value={NomeProduto} onChangeText={setNomeProduto} style = {styles.input} placeholder="Digite o nome do produto"></TextInput>
                         <TextInput value={preco} onChangeText={setPreco} keyboardType="numeric" style = {styles.input} placeholder="Adicione o preço do produto. Ex : R$ 15,99"></TextInput>
                       </View>
-                      <TouchableOpacity onPress={addProduto}>Adicionar Produto</TouchableOpacity>
+                      <TouchableOpacity onPress={addProduto}><Text style={styles.novoProduto}>Adicionar Produto</Text></TouchableOpacity>
                     </View>
                   </View>
                 </Modal>
@@ -158,7 +163,7 @@ const TelaAdmin = ({aoLogout} : TelaProdutosProps) => {
                       <Text>{"< Voltar"}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setVisible(!Visible)}>
-                    <Text style = {styles.addProduto} >Adicionar Produto</Text>
+                    <Text style = {styles.addProduto}>Adicionar Produto</Text>
                   </TouchableOpacity>
                 </View>
                 <FlatList
@@ -217,11 +222,12 @@ const styles = StyleSheet.create({
     excluir : {flex : 1, alignItems: 'flex-end'},
     pai : {flexDirection: 'row',  flex : 1},
     component : {flex : 1, alignItems : "center", justifyContent : "center", backgroundColor : 'rgba(0, 0, 0, 0.5)' },
-    quest : {display : "flex", flexDirection : "column", backgroundColor : "white", padding : 10, borderRadius : 10, width : 800, height : 600, alignItems : "center", justifyContent : "space-between"},
+    quest : {display : "flex", flexDirection : "column", backgroundColor : "white", borderRadius : 10, padding: 50, alignItems : "center", justifyContent : "space-between",},
     configs : {display : "flex", flexDirection : "row", justifyContent : "space-between"}, 
     addProduto : {marginRight : 30},
-    input : { width : 770, padding : 10, borderRadius : 10, marginTop : 50, borderWidth : 1, borderColor : "black", color : "gray "},
+    input : {width: 'auto', padding : 10, borderRadius : 10, marginTop : 50, borderWidth : 1, borderColor : "black", color : "gray "},
     ViewInput : {display : "flex"},
-    TextModal : {fontFamily : "Arial", fontSize : 16, fontWeight : "bold", marginTop : 15}
+    TextModal : {fontFamily : "Arial", fontSize : 16, fontWeight : "bold", marginTop : 15},
+    novoProduto : {marginTop: 30}
 })
-export default TelaAdmin
+export default TelaAdmin;
